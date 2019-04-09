@@ -1,0 +1,5 @@
+include README.rst
+include requirements.txt
+include requirements.core.txt
+recursive-include core_file_preview_app/static *
+recursive-include core_file_preview_app/templates *

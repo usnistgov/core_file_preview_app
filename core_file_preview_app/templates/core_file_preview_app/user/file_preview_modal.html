@@ -1,0 +1,14 @@
+{% extends 'core_main_app/_render/admin/theme/tools/modal.html' %}
+
+{% block modal_id %}file-preview-modal{% endblock %}
+{% block modal_title %}File preview{% endblock %}
+
+{% block modal_body %}
+    <div id="fileImageDisplayArea"></div>
+    <pre id="fileTextDisplayArea"></pre>
+    <div class="alert alert-info" id="errorArea"></div>
+{% endblock %}
+
+{% block modal_footer %}
+{% endblock %}
+
