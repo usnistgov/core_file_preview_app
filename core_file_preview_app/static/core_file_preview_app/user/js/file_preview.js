@@ -25,7 +25,15 @@ const DATA_TYPE = [
         base_type: FILE_CATEGORIES.text
     },
     {
+        mime_type: "text/csv",
+        base_type: FILE_CATEGORIES.text
+    },
+    {
         mime_type: "application/xml",
+        base_type: FILE_CATEGORIES.text
+    },
+    {
+        mime_type: "application/xslt+xml",
         base_type: FILE_CATEGORIES.text
     },
 ]
@@ -34,7 +42,6 @@ const DATA_TYPE = [
 * display the modal preview
 */
 var displayPreview = function(event) {
-    clearModal();
     populateModal("#fileImageDisplayArea", "Loading...", true);
     $.ajax({
         url: event.data.url,
@@ -43,7 +50,6 @@ var displayPreview = function(event) {
         },
         dataType: 'binary',
         success: function(data, textStatus , xhr) {
-            clearModal();
             typeSupportedResult = isTypeSupported(data.type);
             if(typeSupportedResult.is_supported){
                 var content;
@@ -65,8 +71,12 @@ var displayPreview = function(event) {
                 populateModal("#errorArea", "File format is not supported");
             }
         },
-        error: function(err) {
-            populateModal("#errorArea", err);
+        error: function(xhr, status, error) {
+            if(error) {
+                populateModal("#errorArea", error);
+            } else {
+                populateModal("#errorArea", "An error occured while displaying the blob");
+            }
         }
     });
     $("#file-preview-modal").modal("show");
@@ -106,6 +116,7 @@ var clearModal = function() {
 * populate modal
 */
 var populateModal = function(panel, content, as_html) {
+    clearModal();
     if(as_html) {
         $(panel).html(content);
     } else {
@@ -113,21 +124,6 @@ var populateModal = function(panel, content, as_html) {
     }
     $(panel).show();
 }
-
-
-/**
-* wait for an element to be present in the page
-* for element that are display asynchronously
-*/
-var waitForElementReady = function(selector, callback) {
-  if (jQuery(selector).length) {
-    callback();
-  } else {
-    setTimeout(function() {
-      waitForElementReady(selector, callback);
-    }, 100);
-  }
-};
 
 /**
 * detect preview links
@@ -144,7 +140,8 @@ var detectPreview = function() {
 * wait the elements to be displayed, then bind them
 */
 $(document).ready(function() {
-    waitForElementReady(".blob-link", function() {
+    setInterval(function() {
+        // need to check periodically if new blobs are displayed
         detectPreview();
-    });
+    }, 500);
 });
