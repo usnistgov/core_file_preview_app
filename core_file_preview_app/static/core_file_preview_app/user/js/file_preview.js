@@ -44,7 +44,10 @@ const DATA_TYPE = [
 var displayPreview = function(event) {
     populateModal("#fileImageDisplayArea", "Loading...", true);
     $.ajax({
-        url: event.data.url,
+        url: filePreviewUrl,
+        data: {
+            url_blob: event.data.url,
+        },
         xhrFields : {
             responseType : 'blob'
         },
@@ -71,7 +74,7 @@ var displayPreview = function(event) {
                 populateModal("#errorArea", "File format is not supported");
             }
         },
-        error: function(xhr, status, error) {
+        error: function(jqXHR, status, error) {
             if(error) {
                 populateModal("#errorArea", error);
             } else {
