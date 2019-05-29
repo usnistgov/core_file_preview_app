@@ -1,9 +1,10 @@
 """ Ajax User File preview
 """
 import json
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from django.http.response import HttpResponse, HttpResponseServerError, HttpResponseBadRequest
+from future import standard_library
 from rest_framework import status
 
 import core_main_app.utils.requests_utils.requests_utils as requests_utils
@@ -11,6 +12,8 @@ from core_main_app.settings import INSTALLED_APPS, SERVER_URI
 
 if 'core_federated_search_app' in INSTALLED_APPS:
     import core_federated_search_app.components.instance.api as instance_api
+
+standard_library.install_aliases()
 
 
 def get_blob_preview(request):
@@ -75,5 +78,5 @@ def get_blob_preview(request):
             return HttpResponseBadRequest(content)
     except Exception as e:
         # if something went wrong, return an internal server error
-        content = {'message': e.message}
+        content = {'message': str(e)}
         return HttpResponseServerError(content)
