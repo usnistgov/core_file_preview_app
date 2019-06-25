@@ -43,6 +43,7 @@ const DATA_TYPE = [
 */
 var displayPreview = function(event) {
     populateModal("#fileImageDisplayArea", "Loading...", true);
+
     $.ajax({
         url: filePreviewUrl,
         data: {
@@ -52,7 +53,8 @@ var displayPreview = function(event) {
             responseType : 'blob'
         },
         dataType: 'binary',
-        success: function(data, textStatus , xhr) {
+        contentType: 'application/json',
+        success: function(data, textStatus, xhr) {
             typeSupportedResult = isTypeSupported(data.type);
             if(typeSupportedResult.is_supported){
                 var content;
@@ -74,12 +76,14 @@ var displayPreview = function(event) {
                 populateModal("#errorArea", "File format is not supported");
             }
         },
-        error: function(jqXHR, status, error) {
-            if(error) {
-                populateModal("#errorArea", error);
+        error: function(data) {
+            var message;
+            if(data.status == 404){
+                message = "The requested file was not found."
             } else {
-                populateModal("#errorArea", "An error occured while displaying the blob");
+                message = "An error occurred while displaying the file."
             }
+            populateModal("#errorArea", message);
         }
     });
     $("#file-preview-modal").modal("show");

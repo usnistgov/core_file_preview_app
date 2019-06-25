@@ -1,6 +1,7 @@
 """ Ajax User File preview
 """
 import json
+import logging
 from urllib.parse import urlparse
 
 from django.http.response import HttpResponse, HttpResponseServerError, HttpResponseBadRequest
@@ -9,9 +10,10 @@ from rest_framework import status
 import core_main_app.utils.requests_utils.requests_utils as requests_utils
 from core_main_app.settings import INSTALLED_APPS, SERVER_URI
 
+logger = logging.getLogger(__name__)
+
 if 'core_federated_search_app' in INSTALLED_APPS:
     import core_federated_search_app.components.instance.api as instance_api
-
 
 
 def get_blob_preview(request):
@@ -61,20 +63,22 @@ def get_blob_preview(request):
             if response is not None:
                 if response.status_code == status.HTTP_200_OK:
                     # we re-build the response from the response received
-                    return_value = HttpResponse(response, content_type=response.headers["Content-type"])
-                    return return_value
+                    return HttpResponse(response, content_type=response.headers["Content-type"])
                 else:
-                    content = {'message': json.loads(response.text)['detail']}
-                    return HttpResponseBadRequest(content, status=response.status_code)
+                    logger.error("get_blob_preview: Error while getting the blob: {0} status code: {1}".format(
+                        json.loads(response.text)["message"],
+                        response.status_code
+                    ))
+                    content_message = "Something went wrong while getting the file."
             else:
                 # at this point there is no known endpoint in our system
-                content = {'message': "The endpoint is unknown"}
-                return HttpResponseBadRequest(content)
+                content_message = "The endpoint is unknown."
         else:
             # handle missing parameters
-            content = {'message': "Url blob not provided"}
-            return HttpResponseBadRequest(content)
+            content_message = "Url blob not provided."
+        # FIXME: the content_message is not pass to the AJAX error callback
+        return HttpResponse(content_message, status=response.status_code)
     except Exception as e:
         # if something went wrong, return an internal server error
-        content = {'message': str(e)}
+        content = {"message": str(e)}
         return HttpResponseServerError(content)
