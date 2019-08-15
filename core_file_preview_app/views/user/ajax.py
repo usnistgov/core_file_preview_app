@@ -4,7 +4,7 @@ import json
 import logging
 from urllib.parse import urlparse
 
-from django.http.response import HttpResponse, HttpResponseServerError, HttpResponseBadRequest
+from django.http.response import HttpResponse, HttpResponseServerError
 from rest_framework import status
 
 import core_main_app.utils.requests_utils.requests_utils as requests_utils

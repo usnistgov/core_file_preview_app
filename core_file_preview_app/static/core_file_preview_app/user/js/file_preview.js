@@ -80,6 +80,8 @@ var displayPreview = function(event) {
             var message;
             if(data.status == 404){
                 message = "The requested file was not found."
+            } else if (data.status == 403){
+                message = "You don't have enough right to consult this file."
             } else {
                 message = "An error occurred while displaying the file."
             }
