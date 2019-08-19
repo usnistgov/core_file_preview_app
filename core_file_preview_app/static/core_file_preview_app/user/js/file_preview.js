@@ -53,17 +53,14 @@ var displayPreview = function(event) {
         data: {
             url_blob: event.data.url,
         },
-        xhrFields : {
-            responseType : 'blob'
-        },
-        dataType: 'binary',
         contentType: 'application/json',
         success: function(data, textStatus, xhr) {
-            typeSupportedResult = isTypeSupported(data.type);
-            if(typeSupportedResult.is_supported){
+            var typeSupportedResult = isTypeSupported(data.mime_type),
+                blob = b64toBlob(data.content, data.mime_type)
+            if(typeSupportedResult.is_supported) {
                 var content;
                 if(typeSupportedResult.type == FILE_CATEGORIES.image) {
-                    var imageUrl = URL.createObjectURL(data);
+                    var imageUrl = URL.createObjectURL(blob);
                     var img = new Image();
                     img.addEventListener('load', () => URL.revokeObjectURL(imageUrl));
                     img.src = imageUrl;
@@ -71,7 +68,7 @@ var displayPreview = function(event) {
                     populateModal("#fileImageDisplayArea", content, true);
                 } else {
                     var fileReader = new FileReader();
-                    fileReader.readAsText(data);
+                    fileReader.readAsText(blob);
                     fileReader.onloadend = function(e) {
                         populateModal("#fileTextDisplayArea", fileReader.result);
                     };
@@ -79,6 +76,9 @@ var displayPreview = function(event) {
             } else {
                 populateModal("#errorArea", "File format is not supported");
             }
+            $("#btn-file-preview-download").attr("href", URL.createObjectURL(blob));
+            $("#btn-file-preview-download").attr("download", data.filename);
+            $("#btn-file-preview-download").show();
         },
         error: function(data) {
             var message;
@@ -108,7 +108,12 @@ var isTypeSupported = function(content_type) {
             type_supported = element.base_type;
         }
     });
-    return { is_supported: is_supported, type: type_supported };
+
+    return {
+        is_supported: is_supported,
+        type: type_supported,
+        mime_type: content_type
+    };
 }
 
 /**
@@ -123,6 +128,8 @@ var clearModal = function() {
     $("#fileImageDisplayArea").hide();
     $("#fileTextDisplayArea").hide();
     $("#errorArea").hide();
+    // hide download button
+    $("#btn-file-preview-download").hide();
 }
 
 /**
@@ -147,6 +154,26 @@ var detectPreview = function() {
         $(this).css('cursor', 'pointer');
         $(this).off('click', displayPreview).on("click", {url: $(this).attr("data-blob-url")}, displayPreview);
     });
+}
+
+/**
+* build blob from base 64
+* https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript?fbclid=IwAR2_7PWkfAv0NcBlLChT7F1ZmZyv6KYTuXKvNlBgpIzT9fFUOV5kGC8mRPA
+*/
+var b64toBlob = function(b64Data, contentType='', sliceSize=512) {
+    const byteCharacters = atob(b64Data);
+    const byteArrays = [];
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+  }
+  const blob = new Blob(byteArrays, {type: contentType});
+  return blob;
 }
 
 /**

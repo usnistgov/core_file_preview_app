@@ -2,19 +2,14 @@
 """
 import json
 import logging
-from urllib.parse import urlparse
 
 from django.http.response import HttpResponse, HttpResponseServerError
 from rest_framework import status
 
-import core_main_app.utils.requests_utils.requests_utils as requests_utils
-from core_main_app.settings import INSTALLED_APPS, SERVER_URI
 from core_main_app.utils.blob_downloader import BlobDownloader
+from core_main_app.utils.file import get_filename_from_response, get_base_64_content_from_response
 
 logger = logging.getLogger(__name__)
-
-if 'core_federated_search_app' in INSTALLED_APPS:
-    import core_federated_search_app.components.instance.api as instance_api
 
 
 def get_blob_preview(request):
@@ -49,8 +44,15 @@ def get_blob_preview(request):
             # manage the response
             if response is not None:
                 if response.status_code == status.HTTP_200_OK:
+                    # build content
+                    content = {
+                         "content": get_base_64_content_from_response(response),
+                         "mime_type": response.headers["Content-type"],
+                         "filename": get_filename_from_response(response)
+                    }
                     # we re-build the response from the response received
-                    return HttpResponse(response, content_type=response.headers["Content-type"])
+                    return HttpResponse(json.dumps(content),
+                                        'application/json')
                 else:
                     logger.error("get_blob_preview: Error while getting the blob: {0} status code: {1}".format(
                         json.loads(response.text)["message"],
