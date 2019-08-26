@@ -9,6 +9,7 @@ from rest_framework import status
 
 import core_main_app.utils.requests_utils.requests_utils as requests_utils
 from core_main_app.settings import INSTALLED_APPS, SERVER_URI
+from core_main_app.utils.blob_downloader import BlobDownloader
 
 logger = logging.getLogger(__name__)
 
@@ -43,23 +44,9 @@ def get_blob_preview(request):
     try:
         url = request.GET.get('url_blob', None)
         if url is not None:
-            # extract the url base
-            parsed_uri = urlparse(url)
-            url_base = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-            if url_base in SERVER_URI:
-                # call the local instance giving sessionid through the call
-                response = requests_utils.send_get_request(url, cookies={"sessionid": request.session.session_key})
-            else:
-                # so it can be from a federated instance
-                if 'core_federated_search_app' in INSTALLED_APPS:
-                    instance = instance_api.get_by_endpoint_starting_with(url_base)
-                    if instance.endpoint in url:
-                        # here we are sure that our given url
-                        # is one of our known instances
-                        headers = {'Authorization': 'Bearer ' + instance.access_token}
-                        # FIXME: there is a oauth request util in core_explore_common_app
-                        # should maybe move this util into the core_main_app and use it here
-                        response = requests_utils.send_get_request(url, headers=headers)
+            # download the blob
+            response = BlobDownloader(url, request.session.session_key).get_blob_response()
+            # manage the response
             if response is not None:
                 if response.status_code == status.HTTP_200_OK:
                     # we re-build the response from the response received
