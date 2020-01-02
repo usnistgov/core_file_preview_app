@@ -1,4 +1,4 @@
-Django==2.2.4
+Django==2.2.9
 django-mongoengine==0.3.3
 djangorestframework==3.9.1
 django-rest-framework-mongoengine==3.3.1
