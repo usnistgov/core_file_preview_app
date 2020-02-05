@@ -33,7 +33,7 @@ chdir(normpath(join(abspath(__file__), pardir)))
 
 setup(
     name="core_file_preview_app",
-    version="1.5.0",
+    version="1.6.0",
     description="File preview functionalities for the curator core project",
     long_description=long_desc,
     author="NIST IT Lab",
