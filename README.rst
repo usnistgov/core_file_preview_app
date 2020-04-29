@@ -16,3 +16,11 @@ Quickstart
         ...
         'core_file_preview_app',
     ]
+
+2. Include the core_file_preview_app URLconf in your project urls.py like this
+------------------------------------------------------------------------------
+
+.. code:: python
+
+    re_path(r'^file-preview/', include("core_file_preview_app.urls")),
+
