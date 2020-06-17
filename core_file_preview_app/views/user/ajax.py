@@ -4,6 +4,7 @@ import json
 import logging
 
 from django.http.response import HttpResponse, HttpResponseServerError
+from django.utils.html import escape
 from rest_framework import status
 
 from core_main_app.utils.blob_downloader import BlobDownloader
@@ -71,8 +72,8 @@ def get_blob_preview(request):
             # handle missing parameters
             content_message = "Url blob not provided."
         # FIXME: the content_message is not pass to the AJAX error callback
-        return HttpResponse(content_message, status=response.status_code)
+        return HttpResponse(escape(content_message), status=response.status_code)
     except Exception as e:
         # if something went wrong, return an internal server error
-        content = {"message": str(e)}
+        content = {"message": escape(str(e))}
         return HttpResponseServerError(content)
