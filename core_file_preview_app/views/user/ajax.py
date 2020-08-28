@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_blob_preview(request):
-    """ Get the blob preview
+    """Get the blob preview
 
     Parameters:
 
