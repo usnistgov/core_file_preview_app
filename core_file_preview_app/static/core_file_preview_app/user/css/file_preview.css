@@ -16,5 +16,9 @@
 }
 
 .alert-preview {
-    margin-bottom: 0px;
+    margin-bottom: 0;
+}
+
+.blob-link:hover {
+    text-decoration: underline;
 }
