@@ -33,6 +33,10 @@ const DATA_TYPE = [
         base_type: FILE_CATEGORIES.text
     },
     {
+        mime_type: "text/xml",
+        base_type: FILE_CATEGORIES.text
+    },
+    {
         mime_type: "application/xslt+xml",
         base_type: FILE_CATEGORIES.text
     },
