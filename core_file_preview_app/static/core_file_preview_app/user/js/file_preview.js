@@ -41,6 +41,14 @@ const DATA_TYPE = [
         base_type: FILE_CATEGORIES.text
     },
     {
+        mime_type: "text/html",
+        base_type: FILE_CATEGORIES.text
+    },
+    {
+        mime_type: "application/json",
+        base_type: FILE_CATEGORIES.text
+    },
+    {
         mime_type: "none",
         base_type: FILE_CATEGORIES.text
     },
