@@ -1,3 +1,5 @@
+""" Setup for core  file preview """
+
 from os import chdir, pardir
 from os.path import join, exists, dirname, normpath, abspath
 from re import sub
@@ -6,6 +8,7 @@ from setuptools import find_packages, setup
 
 
 def req_link(external_url):
+    """req_link"""
     egg_link = sub(r"https://[^=]+=", "", external_url)
     return "==".join(egg_link.rsplit("-", 1))
 
