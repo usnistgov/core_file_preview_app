@@ -58,13 +58,13 @@ def get_blob_preview(request):
                     }
                     # we re-build the response from the response received
                     return HttpResponse(json.dumps(content), "application/json")
-                else:
-                    logger.error(
-                        "get_blob_preview: Error while getting the blob: {0} status code: {1}".format(
-                            json.loads(response.text)["message"], response.status_code
-                        )
-                    )
-                    content_message = "Something went wrong while getting the file."
+
+                logger.error(
+                    "get_blob_preview: Error while getting the blob: %s status code: %s",
+                    json.loads(response.text)["message"],
+                    response.status_code,
+                )
+                content_message = "Something went wrong while getting the file."
             else:
                 # at this point there is no known endpoint in our system
                 content_message = "The endpoint is unknown."
@@ -73,7 +73,7 @@ def get_blob_preview(request):
             content_message = "Url blob not provided."
         # FIXME: the content_message is not pass to the AJAX error callback
         return HttpResponse(escape(content_message), status=response.status_code)
-    except Exception as e:
+    except Exception as exception:
         # if something went wrong, return an internal server error
-        content = {"message": escape(str(e))}
+        content = {"message": escape(str(exception))}
         return HttpResponseServerError(content)
