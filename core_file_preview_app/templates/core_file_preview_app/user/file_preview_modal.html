@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block modal_footer %}
-    <div class="ml-auto">
+    <div class="{% if BOOTSTRAP_VERSION == "4.6.2" %}ml-auto{% elif BOOTSTRAP_VERSION == "5.1.3" %}ms-auto{% endif %}">
         <a id="btn-file-preview-download"
            class="btn btn-primary"
            href="#">
