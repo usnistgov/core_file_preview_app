@@ -1,5 +1,4 @@
-""" Url router for the file preview app
-"""
+"""Url router for the file preview app"""
 
 from django.urls import re_path
 
